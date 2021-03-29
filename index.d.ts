@@ -1,73 +1,101 @@
-import * as CryptoJS from 'crypto-js';
-declare type WordArray = CryptoJS.lib.WordArray;
-interface jwtProps {
-    enc: {
-        Utf8: {
-            stringify(wordArray: WordArray): string;
-            parse(str: string): WordArray;
-        };
-        Base64: {
-            stringify(wordArray: WordArray): string;
-            parse(str: string): WordArray;
-        };
-    };
+interface insertParams {
+    TABLE: string;
+    columns: Array<string>;
+    values: Array<string>;
+    endValues: Array<string | number>;
 }
-interface req {
-    headers: {
-        Authorization?: string;
-        authorization?: string;
-    };
+interface selectColumnsWhere {
+    TABLE: string;
+    columns: Array<string>;
+    where: Array<string>;
+    join?: string;
+    order?: string;
+    limit?: number;
+    endValues: Array<string | number>;
 }
-interface checkJWT {
-    status: boolean;
-    message?: string;
+interface selectColumns {
+    TABLE: string;
+    columns: Array<string>;
+    join?: string;
+    order?: string;
+    limit?: number;
 }
-interface dataJWT {
-    status: boolean;
-    data?: any;
-    message?: string;
+interface updateColumnsWhere {
+    TABLE: string;
+    columns: Array<string>;
+    where: Array<string>;
+    endValues: Array<string | number>;
 }
-/**
- * @todo Classe de controle de sessão onde pode ser gerado um JWT e validar o mesmo
- * @todo Depende do módulo CryptoJS - [npm i --save crypto-js]
- * @author Bruno Nascimento <br.dev.jobs@gmail.com>
- */
-declare class JWT {
-    props: jwtProps;
-    ISS: string;
-    SECRET_KEY: string;
-    constructor(SECRET_KEY: string, ISS: string);
-    /**
-     * @todo Constroi o cabeçalho do JWT
-     * @returns {String} - base64
-     */
-    buildHeader: () => string;
-    /**
-     * @todo Constroi o payload/corpo(onde ficam os dados utilizados do jwt como user_id, tempo de expiração)
-     * @returns {String} - base64
-     */
-    buildPayload: (params: object) => string;
-    /**
-     * @todo Constroi a assinatura do JWT
-     * @returns {String} - base64
-     */
-    buildSignature: (prev_token: string) => string;
-    /**
-     * @todo Verifica se o token é valido
-     * @param {req} - dados da requisição
-     * @returns {Object} - status e o conteúdo
-     */
-    checkJWT: (req: req) => checkJWT;
-    /**
-     * @todo Retorna os dados contidos no JWT
-     * @param {req} - dados da requisição
-     * @returns {Object} - status e conteúdo
-     */
-    data: (req: req) => dataJWT;
-    /**
-     * Registra um JWT
-     * @return String
-     */
-    register: (params?: object) => string;
+interface updateColumns {
+    TABLE: string;
+    columns: Array<string>;
+    endValues: Array<string | number>;
 }
-export default JWT;
+interface deleteWhere {
+    TABLE: string;
+    where: Array<string>;
+    endValues: Array<string | number>;
+}
+interface deleteValues {
+    TABLE: string;
+}
+export interface dbInterface {
+    host: string;
+    user: string;
+    password: string;
+    database: string;
+}
+declare class DatabaseMysql {
+    private static database;
+    constructor(db: dbInterface);
+    /**
+     * Executa uma query no banco de dados
+     * @param query
+     * @param values
+     * @returns Promise
+     */
+    private static poolAsync;
+    /**
+     * Realiza uma operação no banco de dados
+     * @param query
+     * @param values
+     * @returns Promise
+     */
+    static query: (query: string, values?: any[]) => Promise<any>;
+    /**
+     * Realiza um insert no banco de dados
+     * @returns Promise
+     */
+    static insert: (data: insertParams) => Promise<any>;
+    /**
+     * Realiza um select de colunas em uma tabela, a partir condições no banco de dados
+     * @returns Promise
+     */
+    static selectWhere: (data: selectColumnsWhere) => Promise<any>;
+    /**
+     * Realiza um select de colunas em uma tabela no banco de dados
+     * @returns Promise
+     */
+    static select: (data: selectColumns) => Promise<any>;
+    /**
+     * Realiza um update de colunas em uma tabela no banco de dados a partir de condições
+     * @returns Promise
+     */
+    static updateWhere: (data: updateColumnsWhere) => Promise<any>;
+    /**
+     * Realiza um update de colunas em uma tabela no banco de dados
+     * @returns Promise
+     */
+    static update: (data: updateColumns) => Promise<any>;
+    /**
+     * Realiza um delete em uma tabela, a partir condições no banco de dados
+     * @returns Promise
+     */
+    static deleteWhere: (data: deleteWhere) => Promise<any>;
+    /**
+     * Realiza um delete em uma tabela no banco de dados
+     * @returns Promise
+     */
+    static delete: (data: deleteValues) => Promise<any>;
+}
+export default DatabaseMysql;
