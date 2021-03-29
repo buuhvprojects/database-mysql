@@ -46,7 +46,7 @@ export interface dbInterface {
     database: string;
 }
 declare class DatabaseMysql {
-    private static database;
+    static database: dbInterface;
     constructor(db: dbInterface);
     /**
      * Executa uma query no banco de dados

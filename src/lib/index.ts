@@ -49,7 +49,7 @@ export interface dbInterface {
 }
 
 class DatabaseMysql {
-    private static database: dbInterface = {
+    public static database: dbInterface = {
         host: '',
         user: '',
         password: '',
